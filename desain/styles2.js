@@ -3,7 +3,7 @@ export const styles = `
 
  /* ========== Global Styles ========== */
         body {
-          font-family: 'Poppins', Arial, Helvetica, sans-serif;
+          font-family: Arial, Helvetica, sans-serif;
           text-align: center;          
           background: #e3f2fd;
           color: #333;
@@ -15,7 +15,7 @@ export const styles = `
     font-weight: bold;
     text-align: center;
     margin-top: 10px;
-    padding: 2px;
+    padding: 8px;
     background-color: transparent;
     color: lime;
     border-radius: 8px;
@@ -39,11 +39,9 @@ export const styles = `
           background-color: #e3f2fd; /* Pastikan background solid */
           box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Gunakan bayangan lebih solid */
           border-radius: 10px;
-          padding: 4px 8px;
+          padding: 10px;
           z-index: 500;
           border: 2px solid #007bff;
-          line-height: 1.2; /* Mengurangi tinggi teks */
-          min-height: 20px; /* Batas minimum tinggi */
         }
         
         .image-card {
@@ -116,8 +114,7 @@ export const styles = `
 
         /* ========== Result Container ========== */
         .results-container {
-          margin-top: 145px;
-          font-family: 'Poppins', sans-serif;
+          margin-top: 120px;
           width: 90%;
           max-width: 400px;
           background: #e3f2fd;
@@ -130,15 +127,13 @@ export const styles = `
           margin-left: auto;
           margin-right: auto;
           text-align: left;
-          transition: transform 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
-}
-
+        }
                   /* Tambahan CSS untuk banner teks berjalan */
           .banner {
             background: linear-gradient(90deg, #4CAF50, #2196F3);
             color: white;
             font-weight: bold;
-            padding: 1px 0;
+            padding: 5px 0;
             text-align: center;
             font-size: 14px;
             border-radius: 5px;
@@ -154,7 +149,6 @@ export const styles = `
 
         .result-card {
           background: #E3F2FD;
-          font-family: 'Poppins', sans-serif;
           padding: 10px;
           border-radius: 5px;
           margin-bottom: 5px;
@@ -164,72 +158,71 @@ export const styles = `
         }
 
 /* ========== Tab Buttons ========== */
-
-/* ========== Tab Buttons ========== */
 .btn-container {
-  display: flex;
-  flex-wrap: wrap; /* Agar tombol turun ke bawah setelah 5 tombol */
+  
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* 4 tombol per baris */
+  gap: 7px;
   justify-content: center;
-  gap: 1px; /* Jarak antar tombol */
-  margin-top: 5px;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
-  padding: 12px;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-  backdrop-filter: blur(10px);
+  margin-top: 10px;
+  background: #f0f0f0;
+  border-radius: 8px;
+  padding: 3px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   overflow: hidden;
-  max-width: 350px; /* Lebar maksimal agar tombol tidak terlalu lebar */
-  margin-left: auto;
-  margin-right: auto;
 }
 
 button {
-  width: calc(18% - 6px); /* 5 tombol dalam satu baris */
-  height: 25px;  
-  font-size: 10px;
-  padding: 10px 15px;
+  width: 70px;  /* Ubah lebar */
+  height: 24px;  /* Ubah tinggi */
+  font-size: 10px; /* Ubah ukuran font */
+  padding: 8px 12px;
   border: none;
-  border-radius: 10px;
+  border-radius: 3px;
   cursor: pointer;
-  font-weight: bold;
-  text-align: center;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 3px;
+  font-weight: normal;
+  text-align: left;
+  flex-grow: 1;
   transition: all 0.3s ease;
   position: relative;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-  color: white;
-  overflow: hidden;
+  box-shadow: none;
+  margin: 2px;
 }
 
-/* Agar tombol tetap rata di tengah jika kurang dari 5 */
-@media (max-width: 400px) {
-  button {
-    width: calc(33.33% - 6px); /* 3 tombol per baris jika layar kecil */
-  }
-}
-
-/* Efek Hover dan Aktif */
 button:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
 
-button:active {
+button.active {
+  box-shadow: inset 0 2px 5px rgba(0,0,0,0.2);
   transform: translateY(1px);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-/* Warna dan Gradient */
-.btn-clear { background: linear-gradient(135deg, #ff6b6b, #ff3838); }
-.btn-download { background: linear-gradient(135deg, #4b6cb7, #182848); }
-.btn-logout { background: linear-gradient(135deg, #ff4b2b, #ff416c); }
-.btn-search { background: linear-gradient(135deg, #56ab2f, #a8e063); }
-.btn-inout { background: linear-gradient(135deg, #ffd700, #ffaa00); }
-.btn-export { background: linear-gradient(135deg, #00c6ff, #0072ff); }
+/* Warna latar tab */
+.btn-clear { background: #ffcccb; color: #8b0000; }
+.btn-download { background:rgba(7, 120, 248, 0.86); color:rgb(210, 211, 218); }
+.btn-logout { background:rgba(236, 3, 3, 0.86); color:rgb(210, 211, 218); }
+.btn-search { background: #90ee90; color: #006400; }
+.btn-inout { background: #ffd700; color: #b8860b; }
+.btn-export { background: #add8e6; color: #00008b; }
 
+/* Efek aktif tab */
+.btn-clear:active, .btn-search:active, .btn-inout:active, .btn-export:active {
+  transform: scale(0.95);
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+  .btn-container {
+    background: #2a2a2a;
+  }
+  
+  .btn-clear { background: #8b0000; color: #fff; }
+  .btn-search { background: #006400; color: #fff; }
+  .btn-inout { background: #b8860b; color: #fff; }
+  .btn-export { background: #00008b; color: #fff; }
+}
         
         /* ========== Toast Notification ========== */
         .toast {
@@ -275,8 +268,7 @@ button:active {
         }
         .search-container {
           text-align: center;
-          margin: 1px;
-          padding: 1px;
+          margin: 20px;
         }
         
         /* ========== Custom Pop-up Alert ========== */
@@ -362,14 +354,6 @@ button:active {
             }
           }
 
-          .result-card.selected {
-             background-color: #90caf9; /* lebih biru */
-             color: white;
-          }
-
-.result-card:active {
-  background-color: #bbdefb; /* warna biru muda saat diklik */
-}
 
 
 `;

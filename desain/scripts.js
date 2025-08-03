@@ -1,5 +1,7 @@
-
+import { config } from "../config";
+const SEND_LOG = config.KIRIM_LOG;
 export const scripts = `
+const SEND_LOG = "${SEND_LOG}";
                   function insertToSearch(value) {
              document.getElementById("queryInput").value = value;
          }
@@ -32,57 +34,59 @@ updateClock();
            bingContainer.style.display = "none";
          }
   
-          function searchData(page) {
-            let query = document.getElementById('queryInput').value.trim();
-            let resultsContainer = document.getElementById("searchResults");
-  
-            if (!query) {
-              showToast("Masukkan nama barang terlebih dahulu!");
-              return;
-            }
-              
-  
-            resultsContainer.innerHTML = "<i>🔍 Mencari data...</i";
-  
-            fetch(\`/\${page}?query=\${encodeURIComponent(query)}\`)
-              .then(response => response.text())
-              .then(resultHtml => {
-                resultsContainer.innerHTML = resultHtml.trim() ? resultHtml : "<marquee>❌ Data tidak ditemukan.</marquee>";
-              })
-              .catch(() => {
-                resultsContainer.innerHTML = "<p class='no-result'>⚠️ Gagal mengambil data.</p>";
-              });
-          }
-  
-          document.getElementById('searchForm').addEventListener('submit', function(event) {
-            event.preventDefault();
-            searchData('search');
-          });
+function searchData(page, isFormSubmit = false) {
+    let query = document.getElementById('queryInput').value.trim();
+    let resultsContainer = document.getElementById("searchResults");
 
-         function debounce(func, delay) {
-            let timer;
-            return function () {
-               clearTimeout(timer);
-               timer = setTimeout(() => func.apply(this, arguments), delay);
-            };
-          }
+    if (!query) {
+        showToast("Masukkan nama barang terlebih dahulu!");
+        return;
+    }
+    
+    resultsContainer.innerHTML = "<i>🔍 Mencari data...</i>";
 
-         document.getElementById("queryInput").addEventListener("input", debounce(() => {
-             let query = document.getElementById("queryInput").value.trim();
+    fetch(\`/\${page}?query=\${encodeURIComponent(query)}\`)
 
-             if (query.length < 3) {
-                 document.getElementById('searchResults').innerHTML = ""; // Hapus hasil pencarian
-                 bingContainer.innerHTML = "";
-           bingContainer.style.display = "none";
-                 return;
-              }
+    fetch(\`/\${page}?query=\${encodeURIComponent(query)}&isFormSubmit=\${isFormSubmit}\`)
+        .then(response => response.text())
+        .then(resultHtml => {
+            resultsContainer.innerHTML = resultHtml.trim() ? resultHtml : "<marquee>❌ Data tidak ditemukan.</marquee>";
+        })
+        .catch(() => {
+            resultsContainer.innerHTML = "<p class='no-result'>⚠️ Gagal mengambil data.</p>";
+        });
+}
 
+document.getElementById('searchForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+    searchData('search', true); // Kirim true untuk isFormSubmit
+});
 
-             if (query.length >= 3) {  // Jalankan hanya jika input ≥ 3 karakter
-                 searchData("search");
-              }
-          }, 300)); // Delay 300ms lebih optimal
+function debounce(func, delay) {
+    let timer;
+    return function () {
+        clearTimeout(timer);
+        timer = setTimeout(() => func.apply(this, arguments), delay);
+    };
+}
 
+document.getElementById("queryInput").addEventListener("input", debounce(() => {
+    let query = document.getElementById("queryInput").value.trim();
+    let bingContainer = document.getElementById("bingContainer");
+
+    if (query.length < 3) {
+        document.getElementById('searchResults').innerHTML = "";
+        if (bingContainer) {
+            bingContainer.innerHTML = "";
+            bingContainer.style.display = "none";
+        }
+        return;
+    }
+
+    if (query.length >= 3) {
+        searchData("search", false); // Kirim false untuk isFormSubmit
+    }
+}, 300));
 
 
 function copyToClipboard(text) {
@@ -274,6 +278,13 @@ document.querySelectorAll('button').forEach(button => {
   });
 });
 
+document.querySelectorAll('.result-card').forEach(card => {
+  card.addEventListener('click', () => {
+    card.classList.toggle('selected');
+  });
+});
+
+
           function searchBingImage() {
             const query = document.getElementById("queryInput").value.trim();
             const bingContainer = document.getElementById("bingContainer");
@@ -317,6 +328,88 @@ document.querySelectorAll('button').forEach(button => {
               \`;
             }, 500);
           }
+          function toggleBingResults() {
+    const bingContainer = document.getElementById("bingContainer");
+    const toggleBtn = document.getElementById("toggleBingBtn");
+
+    if (bingContainer.style.display === "block") {
+        bingContainer.style.display = "none";
+        toggleBtn.textContent = "Tampilkan";
+    } else {
+        bingContainer.style.display = "block";
+        toggleBtn.textContent = "Sembunyikan";
+    }
+}
+
+          function logoutUser() {
+  const userToLogout = getCookieValue("loggedInUser"); // Ambil user dari cookie
+
+  if (!userToLogout) {
+    alert("Anda belum login!");
+    return;
+  }
+
+  fetch("/logout-user", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ user: userToLogout }),
+  })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        document.cookie = "loggedInUser=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+        alert("Logout berhasil!");
+        window.location.href = "/"; // Redirect ke halaman utama
+      } else {
+        alert("Gagal logout: " + data.message);
+      }
+    })
+    .catch(error => console.error("Error saat logout:", error));
+}
+
+// Fungsi mendapatkan cookie
+function getCookieValue(cookieName) {
+  const cookies = document.cookie.split("; ");
+  for (let cookie of cookies) {
+    const [name, value] = cookie.split("=");
+    if (name === cookieName) return value;
+  }
+  return null;
+}
+   document.getElementById("currentDomain").textContent = window.location.hostname;  
+   
+         document.getElementById("queryInput").addEventListener("input", function() {
+          let warningText = document.getElementById("warningText");
+          if (this.value.length === 0) {
+              warningText.style.display = "none";
+          } else if (this.value.length < 3) {
+              warningText.style.display = "block";
+          } else {
+              warningText.style.display = "none";
+          }
+      });
+
+
+        function getCookieValue(name) {
+              const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+              return match ? match[2] : "Guest";
+          }
+
+document.addEventListener("DOMContentLoaded", function () {
+  const loggedUser = getCookieValue("loggedInUser");
+  
+  // Update loggedInUser element if it exists
+  const loggedInUserElement = document.getElementById("loggedInUser");
+  if (loggedInUserElement) {
+    loggedInUserElement.textContent = loggedUser;
+  }
+  
+  // Update logout button text
+  const logoutButton = document.getElementById("logoutButton");
+  if (logoutButton) {
+    logoutButton.textContent = "Logout " + loggedUser;
+  }
+});
 
 
 // Jalankan saat halaman dimuat

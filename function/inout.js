@@ -1,7 +1,98 @@
-import { getFromKV_inout, saveToKV_inout } from "./cache";
-import { getCachedData_inout } from "./sheets";
 import { styles } from "./func_style";
+import { config } from "../config";
 
+//==============================cache===================================================  
+export async function saveToKV_inout(data, env) {
+  await env.DATABASE_CACHE.put("inout_cache", JSON.stringify(data), {
+    expirationTtl: 604800, // 1 minggu
+  });
+}
+
+export async function getFromKV_inout(env) {
+  if (!env.DATABASE_CACHE) {
+      console.error("DATABASE_CACHE tidak tersedia!");
+      return null;
+  }
+  const data = await env.DATABASE_CACHE.get("inout_cache");
+  return data ? JSON.parse(data) : null;
+}
+
+//=======reset cache INOUT==================================================================
+
+export async function resetInoutCache(env) {
+  if (!env?.DATABASE_CACHE) {
+    console.error("❌ KV Database tidak terkonfigurasi");
+    return "Gagal: KV tidak tersedia.";
+  }
+
+  try {
+    // Hapus cache inout dan timestamp
+    await env.DATABASE_CACHE.delete("inout_cache");
+    await env.DATABASE_CACHE.delete("inout_last_update");
+
+    console.log("✅ Cache inout berhasil direset.");
+
+    // Ambil data terbaru dari Google Sheets
+    const sheetId = config.SPREADSHEET_ID;
+    const apiKey = config.GOOGLE_API_KEY;
+    const newData = await fetchInoutData(sheetId, "inout!A2:F", apiKey);
+
+    if (Array.isArray(newData) && newData.length > 0) {
+      // Simpan data baru ke cache
+      await saveToKV_inout(newData, env);
+      console.log("✅ Data inout berhasil diperbarui ke KV.");
+      return "Cache inout berhasil diperbarui.";
+    } else {
+      console.warn("⚠️ Tidak ada data baru dari Google Sheets.");
+      return "Cache inout direset, tetapi tidak ada data baru.";
+    }
+  } catch (error) {
+    console.error("❌ Gagal mereset cache inout:", error);
+    return "Gagal mereset cache inout.";
+  }
+}
+
+
+async function fetchInoutData(sheetId, range, apiKey) {
+  try {
+    const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${range}?key=${apiKey}`;
+    const response = await fetch(url);
+    if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
+
+    const data = await response.json();
+    return data.values || [];
+  } catch (error) {
+    console.error("❌ Error mengambil data dari Google Sheets:", error);
+    return [];
+  }
+}
+
+
+//==========ambi data dari sheet inout========================================================
+export async function getCachedData_inout(env) {
+  let data = await getFromKV_inout(env);  // 🔍 Cek cache lebih dulu
+  if (data) return data;                  // ✅ Gunakan cache jika ada
+
+  // ❌ Jika tidak ada di cache, ambil dari Google Sheets
+  const sheetId = config.SPREADSHEET_ID;
+  const apiKey = config.GOOGLE_API_KEY;
+  const range = "inout!A2:F";
+
+  try {
+    const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${range}?key=${apiKey}`;
+    const response = await fetch(url);
+    if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
+
+    data = await response.json();
+    await saveToKV_inout(data.values || [], env);  // ✅ Simpan ke cache
+    return data.values || [];
+  } catch (error) {
+    console.error("❌ Error mengambil data:", error);
+    return [];
+  }
+}
+
+//===============main inout=====
 export async function handleSearch_inout(request, env) {
   const url = new URL(request.url);
   const query = url.searchParams.get("query");
@@ -10,7 +101,7 @@ export async function handleSearch_inout(request, env) {
 
   let data = await getFromKV_inout(env);
   if (!data) {
-    data = await getCachedData_inout();
+    data = await getCachedData_inout(env);
     await saveToKV_inout(data, env);
   }
 

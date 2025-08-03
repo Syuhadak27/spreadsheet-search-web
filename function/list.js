@@ -1,5 +1,4 @@
-import { getFromKV, saveToKV } from "./cache";
-import { getCachedData } from "./sheets";
+import { getFromKV, saveToKV, getCachedData } from "./search";
 import { styles } from "./func_style";
 
 export async function handleSearch_list(request, env) {
@@ -30,7 +29,7 @@ export async function handleSearch_list(request, env) {
                      <thead>
                        <tr>
                          <th>Nama Barang</th>
-                         <th>Kode Toko</th>
+                         <th>Kode</th>
                          <th>Harga</th>
                        </tr>
                      </thead>
@@ -39,7 +38,7 @@ export async function handleSearch_list(request, env) {
     results.forEach(row => {
       resultHtml += `
         <tr>
-          <td onclick="copyToClipboard('${row[1]}')">${row[1]}</td>
+          <td onclick="copyToClipboard('${row[1]}•${row[3]}•${row[4]}')">${row[1]}</td>
           <td>${row[3]}</td>
           <td>${row[4]}</td>
         </tr>`;
