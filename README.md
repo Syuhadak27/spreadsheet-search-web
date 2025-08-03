@@ -35,12 +35,18 @@ git clone https://github.com/username/repository.git
 cd repository
 ```
 
-### **2⃣ Konfigurasi Google Sheets API**
+### **2⃣ Konfigurasi config**
 Buka file `config.js` dan masukkan:
 ```js
 export const config = {
-  SPREADSHEET_ID: "YOUR_SPREADSHEET_ID",
-  GOOGLE_API_KEY: "YOUR_GOOGLE_API_KEY"
+  GOOGLE_API_KEY: "",
+  BOT_TOKEN: "",
+  CHANNEL_ID: "-100xxx",
+  KIRIM_LOG: "telegram",
+  SPREADSHEET_ID: "",
+  USER_WEB: ["user1", "user2", "user3"],
+  ADMIN_USERNAME: "admin",
+  ADMIN_PASWORD: "admin"
 };
 ```
 
