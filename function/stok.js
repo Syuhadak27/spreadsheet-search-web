@@ -53,7 +53,7 @@ async function fetchStokData(sheetId, range, apiKey) {
 //================simpan cache stok============= 
 export async function saveToKV_stok(data, env) {
   await env.DATABASE_CACHE.put("stok_cache", JSON.stringify(data), {
-    expirationTtl: 86400, // 12 jam
+    expirationTtl: 864000, // 120 jam
   });
 }
 

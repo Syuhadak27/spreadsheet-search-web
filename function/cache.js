@@ -1,6 +1,6 @@
 export async function saveToKV(data, env) {
     await env.DATABASE_CACHE.put("search_results", JSON.stringify(data), {
-      expirationTtl: 86400, // 12 jam
+      expirationTtl: 864000, // 12 jam
     });
   }
   
@@ -11,7 +11,7 @@ export async function saveToKV(data, env) {
 //==============================inout===================================================  
   export async function saveToKV_inout(data, env) {
     await env.DATABASE_CACHE.put("inout_cache", JSON.stringify(data), {
-      expirationTtl: 86400, // 12 jam
+      expirationTtl: 864000, // 12 jam
     });
   }
   
@@ -22,7 +22,7 @@ export async function saveToKV(data, env) {
 //============================stok================================================================  
   export async function saveToKV_stok(data, env) {
     await env.DATABASE_CACHE.put("stok_cache", JSON.stringify(data), {
-      expirationTtl: 86400, // 12 jam
+      expirationTtl: 864000, // 12 jam
     });
   }
   
